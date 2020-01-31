@@ -281,12 +281,21 @@ void WebKitProtocolHandler::handleGPU(WebKitURISchemeRequest* request)
         "<table>");
 
 #if PLATFORM(GTK)
+#if PLATFORM(WAYLAND)
     g_string_append_printf(html,
         " <tbody><tr>"
         "  <td><div class=\"titlename\">Type</div></td>"
         "  <td>%s</td>"
         " </tbody></tr>",
         PlatformDisplay::sharedDisplay().type() == PlatformDisplay::Type::Wayland ? "Wayland" : "X11");
+#else
+    g_string_append_printf(html,
+        " <tbody><tr>"
+        "  <td><div class=\"titlename\">Type</div></td>"
+        "  <td>%s</td>"
+        " </tbody></tr>",
+        "X11");
+#endif
 #endif
 
     auto rect = IntRect(screenRect(nullptr));
