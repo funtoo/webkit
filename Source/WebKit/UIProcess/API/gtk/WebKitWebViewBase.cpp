@@ -184,7 +184,9 @@ struct _WebKitWebViewBasePrivate {
     ClickCounter clickCounter;
     CString tooltipText;
     IntRect tooltipArea;
+#if ENABLE(ACCESSIBILITY)
     GRefPtr<AtkObject> accessible;
+#endif
     GtkWidget* dialog { nullptr };
     GtkWidget* inspectorView { nullptr };
     AttachmentSide inspectorAttachmentSide { AttachmentSide::Bottom };
@@ -1345,6 +1347,7 @@ static gboolean webkitWebViewBaseEvent(GtkWidget* widget, GdkEvent* event)
     return GDK_EVENT_PROPAGATE;
 }
 
+#if ENABLE(ACCESSIBILITY)
 static AtkObject* webkitWebViewBaseGetAccessible(GtkWidget* widget)
 {
     WebKitWebViewBasePrivate* priv = WEBKIT_WEB_VIEW_BASE(widget)->priv;
@@ -1361,6 +1364,7 @@ static AtkObject* webkitWebViewBaseGetAccessible(GtkWidget* widget)
 
     return priv->accessible.get();
 }
+#endif
 
 #if ENABLE(DRAG_SUPPORT)
 static gboolean webkitWebViewBaseDragMotion(GtkWidget* widget, GdkDragContext* context, gint x, gint y, guint time)
@@ -1458,7 +1462,9 @@ static void webkit_web_view_base_class_init(WebKitWebViewBaseClass* webkitWebVie
     widgetClass->drag_data_received = webkitWebViewBaseDragDataReceived;
 #endif // ENABLE(DRAG_SUPPORT)
     widgetClass->event = webkitWebViewBaseEvent;
+#if ENABLE(ACCESSIBILITY)
     widgetClass->get_accessible = webkitWebViewBaseGetAccessible;
+#endif
     widgetClass->hierarchy_changed = webkitWebViewBaseHierarchyChanged;
     widgetClass->destroy = webkitWebViewBaseDestroy;
 
