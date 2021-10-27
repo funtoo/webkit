@@ -270,7 +270,9 @@ struct _WebKitWebViewBasePrivate {
     CString tooltipText;
     IntRect tooltipArea;
     WebHitTestResultData::IsScrollbar mouseIsOverScrollbar;
+#if ENABLE(ACCESSIBILITY)
     GRefPtr<AtkObject> accessible;
+#endif
     GtkWidget* dialog { nullptr };
     GtkWidget* inspectorView { nullptr };
     AttachmentSide inspectorAttachmentSide { AttachmentSide::Bottom };
@@ -713,8 +715,10 @@ static void webkitWebViewBaseDispose(GObject* gobject)
     g_clear_pointer(&webView->priv->dialog, gtk_widget_destroy);
     webkitWebViewBaseSetToplevelOnScreenWindow(webView, nullptr);
 #endif
+#if ENABLE(ACCESSIBILITY)
     if (webView->priv->accessible)
         webkitWebViewAccessibleSetWebView(WEBKIT_WEB_VIEW_ACCESSIBLE(webView->priv->accessible.get()), nullptr);
+#endif
 #if GTK_CHECK_VERSION(3, 24, 0)
     webkitWebViewBaseCompleteEmojiChooserRequest(webView, emptyString());
 #endif
@@ -1737,6 +1741,7 @@ static gboolean webkitWebViewBaseEvent(GtkWidget* widget, GdkEvent* event)
     return GDK_EVENT_PROPAGATE;
 }
 
+#if ENABLE(ACCESSIBILITY)
 static AtkObject* webkitWebViewBaseGetAccessible(GtkWidget* widget)
 {
     WebKitWebViewBasePrivate* priv = WEBKIT_WEB_VIEW_BASE(widget)->priv;
@@ -1775,6 +1780,7 @@ static void toplevelWindowIsActiveChanged(GtkWindow* window, GParamSpec*, WebKit
 
     webkitWebViewBaseScheduleUpdateActivityState(webViewBase, ActivityState::WindowIsActive);
 }
+#endif
 
 static void toplevelWindowStateChanged(GdkSurface* surface, GParamSpec*, WebKitWebViewBase* webViewBase)
 {
@@ -2004,7 +2010,9 @@ static void webkit_web_view_base_class_init(WebKitWebViewBaseClass* webkitWebVie
     widgetClass->query_tooltip = webkitWebViewBaseQueryTooltip;
 #if !USE(GTK4)
     widgetClass->event = webkitWebViewBaseEvent;
+#if ENABLE(ACCESSIBILITY)
     widgetClass->get_accessible = webkitWebViewBaseGetAccessible;
+#endif
 #endif
 #if USE(GTK4)
     widgetClass->root = webkitWebViewBaseRoot;
