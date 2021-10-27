@@ -52,10 +52,8 @@ public:
     virtual ~PlatformDisplay();
 
     enum class Type {
-#if PLATFORM(X11)
+#if PLATFORM(X11) || PLATFORM(GTK)
         X11,
-#endif
-#if PLATFORM(WAYLAND)
         Wayland,
 #endif
 #if PLATFORM(WIN)
